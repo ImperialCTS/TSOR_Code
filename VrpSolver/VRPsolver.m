@@ -259,7 +259,7 @@ function [p] = InitialiseParameters(params)
 
 p.population = params.nodeNum * 4;                  % size of solution popualtion
 p.chromNum = ceil(params.nodeNum/(params.veh/2));   % max size of inidividual solution
-p.generations = 1000;                               % number of generations
+p.generations = 500;                               % number of generations
 
 p.childNum = ceil(p.population * 6 / 10);           % number of children produced directly 
                                                     % from parents
