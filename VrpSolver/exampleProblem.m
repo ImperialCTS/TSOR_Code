@@ -63,12 +63,27 @@ for i = 1:length(sol)
     while cId > coloursNum
         cId = cId - coloursNum;
     end
-    % add depot node at start and end of route
-    sol{i} = [params.allNodesId(end),sol{i},params.allNodesId(end)];
-    
+   
     %plot
-    X = params.allNodes(sol{i},1);
-    Y = params.allNodes(sol{i},2);
+    numVisits = length(sol{i});
+    X = zeros(1, numVisits);
+    Y = X;
+    
+    id = 1;
+    for j = 1 : numVisits
+        if (j == 1)
+            X(id) = depot(1);
+            Y(id) = depot(2);
+            id = id + 1;
+        end
+        X(id) = customers(sol{i}(j),1);
+        Y(id) = customers(sol{i}(j),2);
+        id = id + 1;
+        if (j == numVisits)
+            X(id) = depot(1);
+            Y(id) = depot(2);
+        end
+    end
     plot(X,Y,colours(cId)); 
 end
 hold off

@@ -183,6 +183,8 @@ end
 
 PrintSolution(best);
 
+close(h);
+
 end
 
 function [] = PrintSolution(best)
