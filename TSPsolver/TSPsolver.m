@@ -223,14 +223,14 @@ function [p] = InitialiseParameters(params)
 % initialises parameters for the genetic algorithm to function. Uses a
 % struct mechanism, in which all variables are stored into a main struct.
 
-p.population = params.nodeNum * 4;                  % size of solution popualtion
+p.population = params.nodeNum * 5;                  % size of solution popualtion
 p.chromNum = ceil(params.nodeNum);                  % max size of inidividual solution
-p.generations = 5000;                               % number of generations
+p.generations = 3000;                               % number of generations
 
 p.childNum = ceil(p.population * 6 / 10);           % number of children produced directly 
                                                     % from parents
 p.crossoverProb = 0.7;                              % crossover probability
-p.mutationProb = 0.2;                               % mutation probability
+p.mutationProb = 0.4;                               % mutation probability
 p.nearestNeighProb = 0.5;                           % proability to undergo nearest neighbour
 
 end
