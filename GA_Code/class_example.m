@@ -93,9 +93,10 @@ end
 %%  ------------------- EVALUATION
 
 function [fit] = ObjectiveFunction(pop, params)
-% calculates the "goodness" of the solution. In this case, a value is added
+% calculates the "fitness" of the solution. In this case, a value is added
 % if two consecutive numbers are presented. Inputs are the population
 % analaysed (pop) and the GA parameters (params).
+
 fit = zeros(params.population,1);
 for i = 1 : params.population
     
@@ -158,7 +159,7 @@ function [new_population] = Selection(population, pop_fitnesses, params)
 % (fit).
 
 %sort the population
-[sorted_fitness, sort_sequence] = sort(pop_fitnesses, 'descend');
+[~, sort_sequence] = sort(pop_fitnesses, 'descend');
 sorted_population = population(sort_sequence,:);
 
 new_population = sorted_population;
@@ -223,7 +224,7 @@ end
 
 %%  ------------------- MUTATION FUNCTION
 
-function [pop] = Mutation(pop, params)
+function [population] = Mutation(population, params)
 % carries out uniform mutation. A random number of genes and random values
 % are generated and the population changed. Inputs are population solution
 % (pop) and GA parameters (params).
@@ -240,9 +241,9 @@ for i = params.elitesize : params.population
     geneValues = GenerateChromosome(geneMutationNum, params);
     
 %     substitute gene and update population
-    popToMutate = pop{i};
+    popToMutate = population{i};
     popToMutate(geneToMutate) = geneValues;
-    pop{i} = popToMutate;
+    population{i} = popToMutate;
 end
 
 end
