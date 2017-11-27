@@ -1,12 +1,13 @@
 %% GENETIC ALGORITHM SCRIPT
-% generic genetic algorithm with different stages separated into their own
-% methods - stand-alone version
+% Authors: Jose Escribano, Panagiotis Angeloudis
+%
+% A simple Genetic Algorithm to demonstrate the various stages of the search
+% process genetic. 
 
-clear;
-close all;
-clc;
+% Clear previous results and any open windows
+clear;close all;clc;
 
-% initialises problem parameter
+% Initialise GA parameters
 params = InitialiseParameters(); 
 
 % initialise variables to save best solutions
@@ -16,14 +17,9 @@ history.fit = zeros(params.population,1);
 best.sol = cell(1,1);
 best.fit = 0;
 
-%Initialise plot
-p = cell(1,1);
-fig = figure;
-hold on;
-xlabel('Generations');
-ylabel('Fitness Value');
-xlim([0, params.generations]);
-hold off;
+plotInfo = PlotInitialise(params);
+
+
 
 % generate initial population
 populationCurrent = GeneratePopulation(params);
@@ -35,7 +31,7 @@ for i = 1 : params.generations
           
     [best, history] = SaveBestSolution(populationCurrent, fitness, best, history, i);
         
-    p = DrawSolution(history, p, i);
+    plotInfo = DrawSolution(history, plotInfo, i);
     
     populationNew = Selection(populationCurrent, fitness, params);
     populationNew = Crossover(populationNew, params);
@@ -65,7 +61,7 @@ function [p] = InitialiseParameters()
 % initialises parameters for the genetic algorithm to function. Uses a
 % struct mechanism, in which all variables are stored into a main struct.
 
-p.population = 200;                % size of solution population
+p.population = 50;                % size of solution population
 p.genes = 4;                       % size of inidividual solution
 p.generations = 5000;              % number of generations
 
@@ -73,8 +69,8 @@ p.elitesize = p.population/5;      % number of children produced directly
                                    % from parents
 p.upBound = 0;                     % upper bound for number generator
 p.lowBound = 100;                  % lower bound for number generator
-p.crossoverProb = 0.7;             % crossover probability
-p.mutationProb = 0.2;              % mutation probability
+p.crossoverProb = 0.2;             % crossover probability
+p.mutationProb = 0.1;              % mutation probability
 
 end
 
@@ -279,3 +275,15 @@ hold off
 drawnow;
 
 end
+
+function [plotInfo] = PlotInitialise(params)
+%Initialise plot
+plotInfo = cell(1,1);
+fig = figure;
+hold on;
+xlabel('Generations');
+ylabel('Fitness Value');
+xlim([0, params.generations]);
+hold off;
+end
+
