@@ -28,7 +28,7 @@ populationCurrent = GeneratePopulation(params);
 % repeat for all specified
 for i = 1 : params.generations
     
-    fitness = ObjectiveFunction(populationCurrent, params);
+    fitness = FitnessMeasure(populationCurrent, params);
           
     [best, history] = SaveBestSolution(populationCurrent, fitness, best, history, i);
     
@@ -46,6 +46,12 @@ best_x4 = best.sol{1}(4);
 
 bestFitness = best.fit;
 
+fprintf("The optimum value is %4.2f \n",bestFitness);
+fprintf("x1 = %4.5f \n",best_x1);
+fprintf("x2 = %4.5f \n",best_x2);
+fprintf("x3 = %4.5f \n",best_x3);
+fprintf("x4 = %4.5f \n",best_x4);
+
 %end
 
 %%  ------------------- INITIALISATION
@@ -54,14 +60,14 @@ function [p] = InitialiseParameters()
 % initialises parameters for the genetic algorithm to function. Uses a
 % struct mechanism, in which all variables are stored into a main struct.
 
-p.population = 200;                 % size of solution population
+p.population = 200;                % size of solution population
 p.genes = 4;                       % size of inidividual solution
 p.generations = 5000;              % number of generations
 
-p.elitesize = p.population/5;       % number of children produced directly 
+p.elitesize = p.population/5;      % number of children produced directly 
                                    % from parents
 p.upBound = 0;                     % upper bound for number generator
-p.lowBound = 100;                 % lower bound for number generator
+p.lowBound = 100;                  % lower bound for number generator
 p.crossoverProb = 0.7;             % crossover probability
 p.mutationProb = 0.2;              % mutation probability
 
@@ -78,21 +84,21 @@ popNum = params.population;
 pop = cell(popNum, 1);
 
 for i = 1 : popNum
-    pop{i} = GenerateChromosome(params.genes, params);
+    pop{i} = GenerateChromosome( params);
     
 end
 
 end
 
-function [gene] = GenerateChromosome(geneCount, params)
+function [gene] = GenerateChromosome(params)
 
-gene = params.lowBound + rand(geneCount,1) * (params.upBound - params.lowBound);
+gene = params.lowBound + rand(params.genes,1) * (params.upBound - params.lowBound);
 
 end
 
 %%  ------------------- EVALUATION
 
-function [fit] = ObjectiveFunction(pop, params)
+function [fit] = FitnessMeasure(pop, params)
 % calculates the "fitness" of the solution. In this case, a value is added
 % if two consecutive numbers are presented. Inputs are the population
 % analaysed (pop) and the GA parameters (params).
@@ -170,7 +176,7 @@ for i = 1 : params.elitesize
 end
 
 for i = params.elitesize : params.population
-    new_population{i} = GenerateChromosome(params.genes, params);
+    new_population{i} = GenerateChromosome(params);
 end
 end
 
@@ -233,17 +239,18 @@ for i = params.elitesize : params.population
     if (rand > params.mutationProb)
         continue;
     end
+
+    %     find a gene to mutate
+    gene_index_tomutate =  randi(params.genes);
     
-%     find gene to mutate
-    geneMutationNum = randi(params.genes);
-    geneToMutate = randi(params.genes, 1, geneMutationNum);
-%     generate new value at gene
-    geneValues = GenerateChromosome(geneMutationNum, params);
+    chromo_original = population{i};
+    chromo_temp = GenerateChromosome(params);
     
-%     substitute gene and update population
-    popToMutate = population{i};
-    popToMutate(geneToMutate) = geneValues;
-    population{i} = popToMutate;
+    chromo_new = chromo_original;
+    
+    chromo_new(gene_index_tomutate) = chromo_temp(gene_index_tomutate);
+
+    population{i} = chromo_new;
 end
 
 end
