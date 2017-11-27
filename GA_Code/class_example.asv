@@ -110,13 +110,13 @@ for i = 1 : params.population
     x3 = thisChromo(3);
     x4 = thisChromo(4);
 
-    population_fitness(i) = 4 * x1^5 + 2 * x2 * log(x3) + x4;
+    population_fitness(i) = 4 * x1^5 + 2* x2 * log(x3) + x4;
     
-    if ~(x1 + x2 <= 40)
+    if ~(x1+x2<=40)
         population_fitness(i) = 0;
     end 
     
-    if ~(x3 + x4 <= 30)
+    if ~(x3+x4<=30)
        population_fitness(i) = 0;
    end 
     
