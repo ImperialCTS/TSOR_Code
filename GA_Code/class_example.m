@@ -3,6 +3,8 @@
 % methods - stand-alone version
 
 clear;
+close all;
+clc;
 
 % initialises problem parameter
 params = InitialiseParameters(); 
@@ -14,13 +16,14 @@ history.fit = zeros(params.population,1);
 best.sol = cell(1,1);
 best.fit = 0;
 
-%j = figure;
-%hold on;
-%title('Fitness Value at ');
-%xlabel('Generations');
-%ylabel('Fitness Value');
-%xlim([0, params.generations]);
-%hold off;
+%Initialise plot
+p = cell(1,1);
+fig = figure;
+hold on;
+xlabel('Generations');
+ylabel('Fitness Value');
+xlim([0, params.generations]);
+hold off;
 
 % generate initial population
 populationCurrent = GeneratePopulation(params);
@@ -31,6 +34,8 @@ for i = 1 : params.generations
     fitness = FitnessMeasure(populationCurrent, params);
           
     [best, history] = SaveBestSolution(populationCurrent, fitness, best, history, i);
+        
+    p = DrawSolution(history, p, i);
     
     populationNew = Selection(populationCurrent, fitness, params);
     populationNew = Crossover(populationNew, params);
@@ -46,11 +51,11 @@ best_x4 = best.sol{1}(4);
 
 bestFitness = best.fit;
 
-fprintf("The optimum value is %4.2f \n",bestFitness);
-fprintf("x1 = %4.5f \n",best_x1);
-fprintf("x2 = %4.5f \n",best_x2);
-fprintf("x3 = %4.5f \n",best_x3);
-fprintf("x4 = %4.5f \n",best_x4);
+fprintf('The optimum value is %4.2f \n',bestFitness);
+fprintf('x1 = %4.5f \n',best_x1);
+fprintf('x2 = %4.5f \n',best_x2);
+fprintf('x3 = %4.5f \n',best_x3);
+fprintf('x4 = %4.5f \n',best_x4);
 
 %end
 
@@ -126,6 +131,8 @@ end
 
 end
 
+%%  ------------------- RECORDING SOLUTIONS
+
 function [best, bestGen] = SaveBestSolution(pop, fit, best, bestGen, gen)
 % extracts solution of higher fitness from the population. Inputs are the
 % population analised (pop), the fitness of the population (fit), the
@@ -157,12 +164,12 @@ end
 %%  ------------------- SELECTION METHOD
 
 function [new_population] = Selection(population, pop_fitnesses, params)
-% extracts solutions to be carried over for manipulation. Uses a roullete
-% method approach. Calculates cumulative fitness of the solutions, then a
-% random number is assigned and the solution that corresponds to this
-% value is extracted. Higher fitness solutions have higher probability of
-% being extracted. Inputs required are the population (pop) and the fitness
-% (fit).
+% extracts solutions to be carried over for manipulation. Uses an elitist
+% method approach. Sorts solutions in descending fitness order. The first
+% n solutions are selected, and remaining solutions are re-generated to
+% maintain constant populaiton size. Inputs required are the population 
+% (population), the fitness (pop_fitnesses), and parameters structure
+% (params).
 
 %sort the population
 [~, sort_sequence] = sort(pop_fitnesses, 'descend');
@@ -255,15 +262,18 @@ end
 
 end
 
+%%  ------------------- VISUALISATION
 
+function [p] = DrawSolution(bests, p, gen)
+% Updates figure with GA progress. As inputs it requires the struct of all
+% solutions (bests), the plot (p), and the generation number (gen).
+if ~isempty(p{1,1})
+    delete(p{1,1})
+end
 
-function [plot2] = UpdateGraphs(bests, gen, fig2)
-
-set(0,'CurrentFigure',fig2)
 hold on
-
-plot2{1,1} = plot(1:gen,bests.fit(1:gen),'r', 'LineWidth', 2); 
-fitness = bests.fit(gen);
+p{1,1} = plot(1:gen,bests.fit(1:gen),'r', 'LineWidth', 2); 
+fitness = round(bests.fit(gen));
 title(strcat('Fitness Value = ', num2str(fitness)));
 hold off
 drawnow;
