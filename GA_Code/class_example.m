@@ -231,8 +231,9 @@ for i = params.elitesize : params.populationsize
             continue;
         end
         
-        offspring_1(j) = parent_2(j);
-        offspring_2(j) = offspring_1(j);
+	offspring_1(j) = parent_2(j);
+	offspring_2(j) = parent_1(j);
+
     end
     
 %   The offspring REPLACE their parents in the population
