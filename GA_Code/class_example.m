@@ -63,15 +63,16 @@ function [params] = InitialiseParameters()
 
 % The upper bound and lower bound values in this example apply to all
 % variables that are encoded in the gene.
-params.upBound = 0;                         % upper bound for number generator
-params.lowBound = 100;                      % lower bound for number generator
-params.genes = 4;                           % size of inidividual solution
+params.upBound = 100;                     % upper bound for number generator
+params.lowBound = 0;                      % lower bound for number generator
+params.genes = 4;                         % size of inidividual solution
 
-params.populationsize = 50;                         % size of solution population
+params.populationsize = 100;                         % size of solution population
 params.elitesize = round(params.populationsize/3);  % elite population size  
-params.generations = 1000;                          % number of generations
-params.crossoverProb = 0.5;                         % crossover probability
-params.mutationProb = 0.2;                          % mutation probability
+params.generations = 3000;                          % number of generations
+params.crossoverProb1 = 0.5;                         % crossover probability (chromosomes will mate)
+params.crossoverProb2 = 0.5;                         % crossover probability (chromosome genes will be swapped)
+params.mutationProb = 0.1;                          % mutation probability
 
 end
 
@@ -125,12 +126,12 @@ for i = 1 : params.populationsize
     % found to be violated, we assign a value of zero to the fitness
     
     if ~(x1 + x2 <= 40)
-        fitness = 0;
+        fitness = -Inf;
         
     end 
     
     if ~(x3 + x4 <= 30)
-       fitness = 0;
+       fitness = -Inf;
     end 
    
     population_fitness(i) = fitness;
@@ -178,6 +179,8 @@ function [new_population] = Selection(population, pop_fitnesses, params)
 %produce a vector with the rankings of the fitness values in the population
 [~, sort_sequence] = sort(pop_fitnesses, 'descend');
 
+maxvalue = max(pop_fitnesses);
+
 %create a new, sorted population, based on the sequence obtained above
 new_population = population(sort_sequence,:);
 
@@ -202,7 +205,7 @@ function [population] = Crossover(population, params)
 % in the chromosomes.
 
 for i = params.elitesize : params.populationsize
-    if (rand > params.crossoverProb)
+    if (rand > params.crossoverProb1)
         continue;
     end
     
@@ -216,30 +219,26 @@ for i = params.elitesize : params.populationsize
     end
     parent_2 = population{parent_2_index};
     
-%   We initialise the offspring chromosomes, which initially are identical 
-%   to their parents.
+%   We initialise the offspring chromosome, which initially is identical 
+%   to parent 1.
 
-    offspring_1 = parent_1;
-    offspring_2 = parent_2;
+    offspring = parent_1;
     
 %   There is a 50% probability that each gene in the offspring will be 
 %   obtained from a certain parent.  
 
     for j = 1 : params.genes
         
-        if (rand < 0.5)
+        if (rand > params.crossoverProb2)
             continue;
         end
         
-	offspring_1(j) = parent_2(j);
-	offspring_2(j) = parent_1(j);
-
+	offspring(j) = parent_2(j);
     end
     
-%   The offspring REPLACE their parents in the population
+%   The offspring REPLACES parent 1 in the population
 
-    population{i} = offspring_1;
-    population{parent_2_index} = offspring_2;
+    population{i} = offspring;
 end
  
 end
@@ -296,4 +295,3 @@ ylabel('Fitness Value');
 xlim([0, params.generations]);
 hold off;
 end
-
