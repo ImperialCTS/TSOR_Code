@@ -15,7 +15,7 @@ params = InitialiseParameters();
 history.sol = cell(params.populationsize,1);
 history.fit = zeros(params.populationsize,1);
 best.sol = cell(1,1);
-best.fit = 0;
+best.fit = -Inf;
 
 % Initialise GA parameters
 plotinfo = PlotInitialise(params);
